@@ -1,0 +1,1006 @@
+---
+title: 'Intro to R: Data types, structures and manipulation with packages'
+author: "Iyanu Oduwole"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    number_sections: yes
+  html_document:
+    df_print: paged
+---
+
+
+```{r setup, include=FALSE, echo=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("")
+library(tinytex)
+
+```
+
+
+useful link https://bookdown.org/yih_huynh/Guide-to-R-Book/other-resources.html
+
+# Data types in R 
+
+
+
+
+## Numeric
+
+```{r}
+g <- 53.5  # assign 53.3 to the variable g
+g 
+class(g) # class of g, data type of g
+```
+
+
+
+
+
+## Integers
+
+```{r}
+b <- 4L #Appending L to 4 
+b
+typeof(b)
+a <- as.integer(4) 
+a
+typeof(a) # same as class
+```
+
+
+
+## Character
+
+```{r}
+x <- "Data Mining"
+x
+typeof(x)
+
+y <- as.character(42) 
+y
+names <- c("John","Alex","Mo")
+class(names)
+```
+
+
+## Logical
+
+```{r}
+a <- 3
+b <- 6       
+g <- a > b # is a larger than b? This returns a logical value, TRUE or FALSE
+g  
+class(g)
+TF <- c(TRUE,FALSE,TRUE) # no qoutations, "TRUE" is a character NOT logical
+class(TF)
+```
+
+
+
+## Factors
+
+R `factor` is used to store categorical data as *levels*. It can store both character and integer types of data. These factors are created with the help of *factor()* function, by taking a vector as input.
+
+
+```{r}
+Education_level <- c("Below HS","HS","Some College","College Grad","Post Graduate")
+class(Education_level)
+Education_level <- factor(Education_level)
+class(Education_level)
+levels(Education_level) # levels of the vector Education_level, this is a vector of class "factor"
+Education_level <- factor(Education_level, levels =  c("Below HS","HS","Some College","College Grad","Post Graduate"))
+Education_level
+#levels(Education_level) <- c(levels(Education_level), "Professor")
+
+```
+
+
+
+
+
+
+
+
+
+# Data Structures in R 
+
+## Vector
+
+**Vector** – A vector is a sequence of **elements** that share the same data type. These elements are known as components(elements) of a vector. A vector could be of class type `numeric`, `integer`, `logical`, `factor`, or `character`.
+
+
+Vectors are defined by separating its entries by commas, and encasing them with *c()* (you can think of the command *c()* as combine or concatenate). Entries need not be numbers, but if they aren’t, you need to put the entries in quotes.
+
+
+R vector comes in two parts: *Atomic vectors* and *Lists*. They have three common properties:
+
+
+* *Type function* – What it is?
+* *Length function* – How many elements it contains.
+* *Attribute function* – Extra arbitrary metadata.
+
+
+
+Things to keep in mind(learn)
+
+- Creating vectors
+- Accessing Elements of vectors
+- Types of Vectors
+- Vector Operations
+- Applications of vectors
+
+
+
+We will utilize two types of vectors in this class: *numerical* and *categorical* (nuances between nominal vs ordinal, ratio vs. interval come up infrequently). Categorical vectors have elements that represent a finite set of possible outcomes (like hair color, gender). R refers to a categorical vector as a **factor**, and stores the possible values of a factor (called **levels**) as a separate object.
+
+
+
+### Indexing Vectors
+
+There are four forms of vector indexing used to extract a subset of vectors:
+
+1. Positive Integers Vector – Indicates selected elements.
+2. Negative Integers Vector – Indicates rejected elements.
+3. Character Strings Vector – Used only for vectors with named elements.
+4. Logical Values Vector – They are the result of evaluated conditions.
+
+
+```{r}
+vec <- c(5,10,2,3,1,11,NA)  # c for concatenate, NA is for missing value
+vec[c(1,5,6,9)] # elements correponding to 1,5,6,9 indices
+vec[2:5] # elements corresponding to indices 2:5
+vec[-3] # all but the third element
+vec[vec<5] # all elements that are less than 5
+```
+
+
+
+### The `which` command
+
+You may only want to work with specific elements of a vector (like only the ones
+larger than 5). The `which` command returns the positions within the vector of
+elements that meet a certain condition (not the values of the elements themselves).
+
+
+```{r}
+x <- c(1,8,2,-10,-4,5,5,1,6,9,-2,2)
+which(x==2)#positions where elements are equal to 2
+which(x<0)#positions where elements are less than 0
+x[ which(x<0) ]#elements where elements are less than 0
+mean(x[which(x >0)])#average of all elements in x larger than 0
+```
+
+
+
+
+
+### Logical conditions
+
+* `equals` ==
+* `not equals` !=
+* `greater than` >
+* `greater than or equal to` >=
+* `less than` <
+* `less than or equal to` <=
+* is missing `is.na()`, e.g., `which(is.na(x))` tells you the positions of missing data
+* is not missing `!is.na()`, e.g., `which(!is.na(x))` tells you the positions of data that exists
+* belongs to a list of values `%in%`
+
+
+
+```{r}
+5==5
+which(x==5) # returns position of values in x that are equal to 5
+```
+
+
+**You can combine conditions:**
+
+* "and" `&`
+* "or" `|` (shift backslash key)
+
+
+```{r}
+x <- c(1,8,2,-10,-4,NA,5,NA,6,9,-2,NA)#redefine x and put some missing values in it
+which( x >=0 & x <= 4)#positions where x is between 0 and 4, inclusive
+which( x <=0 | x == 2)#positions where x is 0 or less, or 2
+which( x <=0 | x == 2|is.na(x))#positions where x is 0 or less, equal to 2, or missing
+```
+
+
+
+
+### The `%in%` shortcut
+
+```{r}
+x <- c(1,5,8,2,-10,-4,NA,5,NA,6,9,-2,NA)#redefine x and put some missing values in it
+which( x %in% c(1,2,5,12))#positions where x is 1, 2, 5, or 12
+x[ which( x %in% c(1,2,5,12))]#values of x that are either 1, 2, 5, or 12
+x[ which( x %in% seq(0,100,by=2))]#values of x that are even numbers between 0 and 100
+x[ which( x <= 5)]#values of x that are at most 5
+x[ which( x %in% (1:10)^2)]#values of x that are square numbers between 1 and 100
+```
+
+
+
+
+
+### Summarizing vectors
+
+```{r}
+vec <- c(5,10,2,3,1,11,NA) 
+summary(vec)  #5 number summary
+length(vec) #number of elements
+length( unique(vec) ) #number of non-duplicated values
+min(vec)  #returns NA because NAs exist in the data
+min(vec,na.rm=TRUE) #need na.rm=TRUE when NAs are in data to get the values out
+mean(vec)
+mean(vec,na.rm=TRUE) # remove the NAs and return the mean
+```
+
+
+
+
+
+## Sequences and Patterns in R
+
+Sequences of numbers can be made in R with the `seq` command. This takes 3 of 4 possible arguments `from`, `to`, `by`, and `length`.
+
+
+```{r}
+seq(from=10,to=11,length=5)
+```
+
+
+The `rep(x,times)` command is useful for creating a vector with a certain pattern, e.g., creating a pattern `x repeated times` times.
+
+
+```{r}
+rep(0,25)
+```
+
+
+
+
+## factor vectors
+
+
+```{r}
+x <- factor( c("dog","dog","cat","cat","cat","dog","dog") )  #a factor
+levels(x)  #two possible values are cat and dog
+## ----Adding a level------------------------------------------------------
+x[8] <- "fish"  #cannot add fish to the end of this vector since that is not a valid level
+
+#lets start over
+x <- factor( c("dog","dog","cat","cat","cat","dog","dog") )  #a factor
+levels(x) <- c( levels(x), "fish")  #use the levels command to append the list of valid levels
+summary(x)
+x[8] <- "fish" #success, because "fish" is level that exists
+summary(x)
+
+## Renaming levels of a factor
+x <- factor(c("a","a","b","b","b","","","c","d"))
+x  #the blank is for all intents and purposes invisible
+levels(x)  #Notice that a blank is shown as back to back quotation marks 
+levels(x)[1] <- "missing"   #Renaming the blank level (1st in the list) to be missing
+x
+levels(x)
+
+## Renaming levels of a factor safe
+x <- factor(c("a","a","b","b","b","","","c","d"))
+levels(x)[ which( levels(x) == "" )] <- "missing"   #Safe way of renaming the blank level to be missing
+x
+levels(x)
+
+## Dealing with blanks
+x <- factor(c("a","a","b","b","b","","","c","d"," "," ",""," "))
+x  #the blank is for all intents and purposes invisible
+levels(x)  #Notice that a blank is shown as back to back quotation marks 
+#following code is general and replaces blanks, single space, double space, and tab
+levels(x)[ which( levels(x) %in% c(""," ","  ","\t")) ] <- "missing"   
+x
+levels(x)
+
+## Combining levels dangerous
+x <- factor(c("a","b","b","b","b","c","d","e","e"))
+levels(x)
+table(x)
+#Imagine we want to combine a, c, and d (which appear once) into a level called other
+levels(x)[c(1,3,4)] <- "other"   #a is the 1st, c is the 3rd, d is the 4th levels of x
+table(x)
+
+## Combining levels safe
+x <- factor(c("a","b","b","b","b","c","d","e","e"))
+#Imagine we want to combine a, c, and d (which appear once) into a level called other
+#Use which, %in%, and give a vector of levels you want to combine
+levels(x)[ which(levels(x) %in% c("a","c","d")) ] <- "other"   
+table(x)
+```
+
+
+
+
+If x is a factor, you can get a frequency table, examine its levels, make a bar chart, etc. See
+
+* `table(x)` - a list of levels and how many times they appear
+* `table(x)/length(x)` - a relative frequency table (percentages)
+* `levels(x)` - the possible values of the factor
+* `plot(x)` - bar chart
+* `barplot(table(x))` - bar chart
+
+
+
+
+
+
+
+
+
+### Note on selecting elements of factors
+
+
+For factors, elements are text expressions. When selecting elements using `==` or
+`%in%`, quotes need to surround whatever is on the right of == or %in%. Otherwise,
+`R` will assume that what is on the right is a vector, and use the vector’s contents.
+
+```{r}
+x <- factor( c("f","u","n","k","y","b","u","t","t","e","r","s","i","p","s"))
+which(x == "u") #things on right of == need to be in quotes
+which(x %in% c("b","a","s")) #things on right of == need to be in quotes
+s <- c("p","e","t","r","i","e")
+which(x %in% s)#s not in quotes, so R uses what makes up the vector
+```
+
+
+
+### Alternative: the subset command
+
+
+The function which determines the locations of certain elements in a vector. The result is
+usually encased in to extract those elements. E.g., `x[which(x>5)]` gives the elements
+that are bigger than 5. The function subset conveniently combines these two steps.
+
+```{r,eval=FALSE}
+subset(name of vector, condition regarding elements of vector)
+```
+
+
+```{r}
+x <- c(1,8,2,-10,-4,NA,5,NA,6,9,-2,NA)#redefine x and put some missing values in it
+subset(x,x>5) #reports the values of x that are bigger than 5
+subset(x,!is.na(x))#reports the values of x that are not missing
+x <- factor( c("a","b","b","b","a","a","cat","cat","dog") )
+subset(x,x=="a" | x=="b")
+subset(x,x %in% letters) #letters is a vector a, b, c, d, etc.,
+subset(x,x=="hi")#reports elements that equal hi, of which there are none
+```
+
+
+
+
+
+
+
+
+
+
+## Matrices
+
+**Matrices** – A matrix is basically a two-dimensional array of numbers or other types of mathematical objects. We can do operations such as addition and multiplication on the matrix in R. 
+
+```{r}
+mat <- matrix(1:25,nrow = 5, ncol = 5) # create a 5 by 5 matrix with the elements 1:25
+mat
+```
+
+
+```{r}
+X <- c(16.92, 24.03, 7.61, 15.49, 11.77)    
+Y <- c(8.37, 12.93, 16.65, 12.2, 13.12)
+comb <- cbind(X,Y) # column bind
+colnames(comb) # column names
+rownames(comb) <- LETTERS[1:5] # row names, LETTERS is built in vector
+comb
+```
+
+
+### Indexing Matrices
+```{r}
+print(comb)
+comb[1,2]
+```
+
+
+Creating R matrix?
+
+
+```{r}
+arrang_row <- matrix(c(4:15), nrow = 4, byrow = TRUE) #Creating our matrix and arranging it by row
+arrang_row #Printing our arranged matrix
+arrang_col <- matrix(c(4:15), nrow = 4, byrow = FALSE)       #Creating our matrix and arranging it by column
+arrang_col    #Printing our arranged matrix 
+```
+
+
+
+Row names and column names for a matrix
+```{r}
+rows <- c("row1", "row2", "row3", "row4")     #Creating our character vector of row names
+cols <- c("col1", "col2", "col3")          #Creating our character vector of column names
+mat <- matrix(c(4:15), nrow = 4, byrow = TRUE, dimnames = list(rows, cols) ) 
+mat
+```
+
+
+
+**Modifying Elements of a Matrix**
+
+```{r}
+mat    #Displaying values of matrix mat
+mat[2,3] <- 20  #Assigning value 20 to the element at 2nd row and 3rd column
+mat       #Displaying our modified matrix.
+
+mat[mat == 4] <- 0     #Replacing elements that are equal to 4 with 0
+mat        #Displaying our modified matrix ‘mat’
+
+mat[mat < 10] <- 0       #Replacing elements that are less with 10 with 0
+mat        #Displaying modified matrix ‘mat’
+```
+
+
+
+**Addition of Rows and Columns**
+```{r}
+new_mat <- matrix(1:12, nrow = 3, ncol = 3)
+new_mat
+```
+
+Now, we will add a column to our matrix ‘new_mat’ using *cbind()* function as follows:
+```{r}
+cbind(new_mat, c(1,2,3)) # cbind for column bind
+```
+
+We can also add a row using the *rbind()* function as follows:
+
+```{r}
+rbind(new_mat, c(1,2,3)) # rbind for row bind
+```
+
+
+
+### R Matrix Operations
+
+
+```{r}
+mat1 <- matrix(data = 1:8, nrow = 4, ncol = 4) #Creating our first matrix mat1 
+mat2 <- matrix(data = 1:16, nrow = 4, ncol = 4) #Creating our second matrix mat2
+sum <- mat1 + mat2 #Adding our two matrices
+sum #Printing the sum
+sub <- mat1 - mat2 #Adding our two matrices
+sub #Printing the sum
+prod <- mat1*4 #Multiplying matrix mat1 with constant value 4
+prod #Printing the product
+prod <- mat1*mat2 #Multiplying matrix mat1 with mat2 - this is element-wise multiplication
+prod #Printing the product
+div <- mat1/mat2 #Division of mat1 and mat2 
+div #Printing the division
+```
+
+
+
+
+
+
+## Lists  
+
+R list is the object which contains elements of different types – like *strings*, *numbers*, *vectors* and *another list* inside it. R list can also contain a matrix or a function as its elements. The list is created using the *list()* function in R. In other words, a list is a generic vector containing other objects.
+
+
+```{r}
+vec <- c(1,2,3)
+char_vec <- c("R", "Python", "Matlab", "SAS")
+logic_vec <- c(TRUE, FALSE, TRUE, FALSE)
+our_list <- list(vec, char_vec, logic_vec)
+our_list
+```
+
+
+How do we create a *list*? Let’s create a list containing *string, numbers, vectors* and *logical values*.
+
+```{r}
+list_data <- list("Red", "White", c(1,2,3), TRUE, 22.4)
+print(list_data)
+```
+
+
+Naming elements of a *list*.
+
+```{r}
+data_list <- list(c("Jan","Feb","Mar"), matrix(c(1,2,3,4,-1,9), nrow = 2),list("Red",12.3))
+names(data_list) <- c("Month", "Matrix", "Misc")
+print(data_list)
+```
+
+
+
+How to Access R List Elements? 
+
+
+
+```{r}
+data_list[1] # first element of the list
+data_list$Month
+```
+
+Altering elements in a list?
+
+
+```{r}
+data_list[4] <- "New element" # adding a fourth element to the list
+data_list[4] <- NULL # remove the fourth element
+data_list[3] <- "updated element" # update the third element
+```
+
+
+
+
+
+
+## Arrays
+
+We will skip this. Not very often used in R
+
+
+
+
+
+
+
+
+
+
+
+
+## Data-frames
+
+
+A data frame is a two-dimensional array. Unlike a matrix, the data we store in the columns of the data frame can be of various types. It means one column might be a numeric variable, another might be a factor, and a third might be a character variable. All columns have to be of the same length.
+
+
+* The column names should be non-empty.
+* The row names should be unique.
+* The data frame can hold the data which can be a numeric, character or of factor type.
+* Each column should contain the same number of data items.
+
+
+
+### R Data Frame Operations
+
+Creating a data frame using *data.frame()*.
+
+```{r}
+employee_data <- data.frame(
+  employee_id = c (1:5),
+  employee_name = c("James","Harry","Shinji","Jim","Oliver"),
+  sal = c(642.3,535.2,681.0,739.0,925.26),
+  join_date = as.Date(c("2013-02-04", "2017-06-21", "2012-11-14", "2018-05-19","2016-03-25")),
+  stringsAsFactors = FALSE)
+employee_data
+str(employee_data) # Get the Structure of the R Data Frame
+```
+
+
+dimensions of a data frame:
+```{r}
+dim(employee_data)
+```
+
+
+**Indexing a data frame** : we essentially index data frames just like we would an R matrix.
+
+
+
+```{r}
+employee_data[1:2,] # rows 1 and 2
+```
+
+
+Expanding a data frame
+
+
+```{r}
+employee_data$dept <- c("IT","Finance","Operations","HR","Administration")
+employee_data
+
+# add a data frame with a new employee
+new_employee_data <- data.frame(
+employee_id = c (6),
+employee_name = c("Emma"),
+sal = c(523.0),
+join_date = as.Date(c("2015-06-22")),
+dept = "Sales",
+stringsAsFactors = FALSE
+)
+
+new_employee_data
+
+updated_employee_data <- rbind(employee_data,new_employee_data) # row binding the two data frames
+updated_employee_data
+summary(updated_employee_data)
+```
+
+
+
+**Existing data frames in R**: There are many data sets in R housed in different packages.
+
+```{r}
+head(iris) # first 6 rows of the iris dataset
+str(iris) # structure of the iris dataset
+class(iris) # class of the iris dataset
+```
+
+
+
+**Subsetting a data frame**: This is a very important concept to understand. You will often be interested in a subset of a dataset, be it subset of rows or subset of columns. The *subset()* function does exactly that. The first argument of the *subset()* function is the data frame.
+
+```{r}
+levels(iris$Species) # the three types of Species (Levels of Species variable)
+```
+
+How can we subset to just the data for Species=="setosa"? Lets use the *subset* function
+
+
+```{r}
+iris_setosa <- subset(iris,Species=="setosa") # first argument is the data frame, followed by the condition
+head(iris_setosa)
+subset(iris,Species=="setosa" & Petal.Length > 1.7) # Setosa species with Petal.Length > 1.7
+subset(iris,Species=="setosa" & Petal.Length > 1.7, select = c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width"))
+```
+
+**Data manipulations  can be made effective using packages**
+
+
+### What is Tidyverse?
+
+- Tidyverse is a collection of R packages designed for data science.
+- It provides a consistent and coherent set of functions for data manipulation, visualization, and modeling.
+- Tidyverse emphasizes tidy data principles, making data cleaning and analysis easier and more intuitive.
+
+---
+
+# Load the tidyverse
+library(tidyverse)
+search()
+##  [1] ".GlobalEnv"        "package:forcats"   "package:stringr"  
+##  [4] "package:dplyr"     "package:purrr"     "package:readr"    
+##  [7] "package:tidyr"     "package:tibble"    "package:ggplot2"  
+## [10] "package:tidyverse" "package:stats"     "package:graphics" 
+## [13] "package:grDevices" "package:utils"     "package:datasets" 
+## [16] "package:methods"   "Autoloads"         "package:base"
+### Key Tidyverse Packages
+
+- **dplyr**: For data manipulation
+- **ggplot2**: For data visualization
+- **tidyr**: For data tidying
+- **purrr**: For functional programming
+- **readr**: For data import
+- **tibble**: For modern data frames
+
+---
+
+### Using Tidyverse Functions
+
+- Tidyverse functions follow a consistent syntax and approach.
+- The pipe operator `%>%` is used to chain together multiple operations.
+- Functions are designed to work seamlessly with each other, allowing for a streamlined workflow.
+Tutorial adopted from: "https://jcoliver.github.io/learn-r/012-intro-tidyverse.html"
+
+Here we are using the iris data were collected by botanist Edgar Anderson and used in the early statistical work of R.A. Fisher.
+
+Our goal : Explore the data stored in the pre-loaded iris dataset
+
+
+```{r, warning=FALSE}
+#install.packages("tidyverse")
+library(tidyverse)
+head(iris)
+glimpse(iris)
+head(iris)
+
+```
+
+**Summarizing the data**
+So what will we need? Break this down into the component parts.
+Means
+Standard errors
+For each species
+For each trait
+
+
+```{r}
+# The hard way by getting means for a single column
+setosa_mean <- mean(iris$Sepal.Length[iris$Species == "setosa"])
+versicolor_mean <- mean(iris$Sepal.Length[iris$Species == "versicolor"])
+virginica_mean <- mean(iris$Sepal.Length[iris$Species == "virginica"])
+
+# Add these back into a data.frame
+iris_means <- data.frame(Species = c("setosa", "versicolor", "virginica"),
+                         SL_mean = c(setosa_mean, versicolor_mean, virginica_mean))
+
+# There is a better way with tidy verse
+# Group the iris data by values in the Species column
+iris_grouped <- group_by(iris, Species)
+head(iris_grouped)
+iris_means <- summarise(iris_grouped, SL_mean = mean(Sepal.Length))
+# Really cool part is that you can pipe these together
+iris_means <- iris %>%
+  group_by(Species) %>%
+  summarize(SL_mean = mean(Sepal.Length))
+glimpse(iris_means)
+# if you want to summarise the standard error as well
+iris_means <- iris %>%
+  group_by(Species) %>%
+  summarize(SL_mean = mean(Sepal.Length),
+            SL_se = sd(Sepal.Length)/sqrt(n()))
+iris_means
+```
+
+**Reorganize the data so each row only has data for a single trait**
+```{r}
+#This is known as “long” format, where each row only has a single trait observation. To make this data conversion, we use the the pivot_longer function:
+iris_long <- pivot_longer(data = iris, 
+                    cols = -Species,
+                    names_to = "trait",
+                    values_to = "measurement")
+
+# compute that with the Iris means
+iris_means <- iris %>%
+  pivot_longer(cols = -Species, 
+               names_to = "trait", 
+               values_to = "measurement") %>%
+  group_by(Species, trait) %>%
+  summarize(trait_mean = mean(measurement),
+            trait_se = sd(measurement)/sqrt(n()))
+
+iris_means
+# joining data frame
+
+# Assume we have two copies of the Iris dataset
+iris1 <- iris
+iris2 <- iris
+
+# Add a new column to iris2   and iris1
+iris1$ID <- sample(1:150, 150)
+iris2$ID <- sample(1:150, 150)
+
+# Perform inner join
+inner_join_result <- inner_join(iris1, iris2, by = "ID")
+
+# Perform outer join
+outer_join_result <- full_join(iris1, iris2, by = "ID")
+# perform merge
+merge_result <- merge(iris1, iris2, by = "ID", all = TRUE)
+
+#Note : inner_join() performs an inner join on the common column "ID", and full_join() performs an outer join, resulting in a dataset containing all rows from both iris1 and iris2. merge() performs a merge operation on the common column "ID", and the all = TRUE argument specifies that it should perform a full outer join, resulting in a dataset containing all rows from both iris1 and iris2
+
+```
+
+**loading and manipulating data with tidyverse part 2**
+```{r, results='hide'}
+surveys <- read.csv("~/Documents/R/colloqium_presentation/surveys.csv")
+glimpse(surveys)
+# f we want to create a new object with this smaller version of the data
+
+surveys_sml <- surveys %>%
+  filter(weight < 5) %>%
+  select(species_id, sex, weight)
+
+# To create a new column of weight in kg with mutate
+surveys %>%
+  mutate(weight_kg = weight / 1000)
+glimpse(surveys)
+surveys %>%
+  mutate(weight_kg = weight / 1000,
+         weight_kg2 = weight_kg * 2)
+
+# The first few rows of the output are full of NAs, so if we wanted to remove those we could insert a filter() in the chain:
+
+surveys %>%
+  filter(!is.na(weight)) %>%
+  mutate(weight_kg = weight / 1000) 
+
+glimpse(surveys)
+
+surveys %>%
+  filter(!is.na(weight)) %>%
+  group_by(sex, species_id) %>%
+  summarize(mean_weight = mean(weight),
+            min_weight = min(weight))
+```
+
+**Conditional statements with Data manipulation**
+```{r}
+# ifelse statements 
+surveys$hindfoot_cat <- ifelse(surveys$hindfoot_length < 29.29, "small", "big")
+head(surveys$hindfoot_cat)
+# you can also use mutate with case_when
+surveys %>% 
+  mutate(hindfoot_cat = case_when(
+    hindfoot_length > 29.29 ~ "big",
+    TRUE ~ "small"
+  )) %>% 
+  select(hindfoot_length, hindfoot_cat) %>% 
+  head()
+glimpse(surveys)
+# To adjust for the NAs
+surveys %>% 
+  mutate(hindfoot_cat = case_when(
+    hindfoot_length > 29.29 ~ "big",
+    is.na(hindfoot_length) ~ NA_character_,
+    TRUE ~ "small"
+  )) %>% 
+  select(hindfoot_length, hindfoot_cat) %>% 
+  head()
+
+```
+
+
+# We will go back to for and while loops if we have time
+## for loop 
+
+This is what a for loop looks like.
+
+```{r,eval=FALSE}
+for(looping.variable in vector.of.values) {
+command 1
+command 2
+command 3
+etc.
+}
+```
+
+
+```{r}
+words <- c("hi","there")
+for(p in words) {
+info <- c( p, nchar(p) ) # info contains the word and its number of characters
+print(info)
+}
+```
+
+
+Let us use a for loop to redefine the elements in positions 2, 3, 7 of a vector x.
+Specifically, the element in position i should equal 2*i+5.
+```{r}
+x <- c(2.1,9.1,5.9,4.8,3.7,1.6,3.1,3.8,2.9,6.9,4.9,8.9,7.1) # Give x an initial definition
+for(i in c(2,3,7)) {
+x[i] <- 2*i + 5
+}
+x
+```
+
+Imagine I have 10 students in a class and I need to calculate a weighted average of
+their homework. It would be tedious to do one by one (a lot of copy/pasting), so a
+loop will help out.
+```{r}
+#First, make up a gradebook with random numbers between 0.7-1
+set.seed(474)
+GRADES <- matrix( runif(50,.7,1),nrow=10,ncol=5 )#10 students, 5 assignments
+wg <- rep(0,nrow(GRADES))#Initialize weighted grades to be a vector of ten 0s (one for each student)
+for (i in 1:length(wg)) {
+wg[i] <- 0.5*mean(GRADES[i,1:4])+0.5*GRADES[i,5]
+}
+wg
+```
+
+**Note**: **the initialization step is important**. Running x[2] <- 9 will fail if x
+does not already exist in the global environment. To put something inside a vector,
+R needs to be aware of that vector’s existence first!
+
+
+
+**Another example:** In forecasting, a popular method for “smoothing out" a jumpy time series is to take a moving average of (say) the two observations before and after the current one.
+Imagine we have a time series called demands that contains the demands of a
+product over 50 weeks. We’d like to create series of moving averages.
+
+```{r}
+#Make up a bogus time series of 50 demands by randomly picking numbers 5-20
+set.seed(577); demands <- sample(5:20,size=50, replace=TRUE)
+moving.avg <- rep(NA,50)#Initialize moving.avg to be 50 NAs
+for (time in 3:48) {
+moving.avg[time] <- mean(demands[(time-2):(time+2)] )
+}
+moving.avg #Some elements are NA by design
+```
+
+
+
+
+
+
+**We can also do nested for loops**
+```{r}
+mat <- matrix(1:10, 2) # nrow=2, byrow=FALSE
+mat
+for (id1 in seq(nrow(mat))) { # loop through the rows
+  for (id2 in seq(ncol(mat))) { # loop through the columns
+    print(mat[id1, id2])
+  }
+}
+```
+
+
+## while loop 
+
+
+In a *for()* loop, you give the code a specific list of values to loop over (1, 2, 3, . . . ,
+to the number of rows in the dataframe, all elements of a vector of words, etc.).
+Sometimes you do not know how many times the loop will need to execute, but
+you’ll know when it’s done. "While such and such is true, continue to do this and
+that".
+
+This is the job of a *while()* loop. A while loop allows you to repeat a set of
+commands as long as some logical condition is TRUE.
+
+
+Examples:
+
+* Betting until you are broke or double your money. Perhaps you start with $10,
+bet $1 each time, and you want to keep track of the total number of games
+you get to play (and perhaps the money you had after each bet). The
+probability of winning is 18/38 and losing is 20/38. Recall that sample(
+c(-1,1),size=1,prob=c(20/38,18/38)) will randomly generate a -1 or a
+1 with the desired probabilities.
+
+
+```{r,eval=FALSE}
+commands before loop
+while( logical condition ) {
+  Repeat this chunk of code
+}
+commands after loop
+```
+
+
+
+**Example:** Vegas Roulette problem. In English: “while the amount of money is larger than 0,
+randomly determine the outcome of the next bet and adjust the amount of money
+accordingly and increment the total number of bets placed by 1".
+
+```{r}
+money <- 10 # vector that will keep track of bankroll
+number.of.bets <- 0 # Initialize a variable to keep track of the number of bets
+set.seed(577) # set random number seed for reproducibility
+while(min(money)>0){
+  number.of.bets <- number.of.bets + 1 #Increment the number of bets that have been made
+  result <- sample( c(-1,1),size=1,prob=c(20/38,18/38))#get random outcome of bet
+  money <- c(money,tail(money,1) + result) #add an additional element and update the current amount
+}
+number.of.bets
+money
+```
+
+
+
+Since money is a vector whose $i$-th element is the amount of money we have going
+into bet $i$, we can make a plot to see the time evolution of the money we have.
+
+```{r}
+money <- 10; number.of.bets <- 0; set.seed(21)
+while ( min(money) > 0) {
+    number.of.bets <- number.of.bets + 1
+    result <- sample( c(-1,1),size=1,prob=c(20/38,18/38))
+    money <- c(money,tail(money,1) + result) 
+}
+number.of.bets
+bet.number <- 1:length(money)
+plot(money ~ bet.number ,xlab="Bet Number",ylab="Money",type="l")
+```
+
+
+
+
+
+
+
