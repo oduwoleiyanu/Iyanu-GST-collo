@@ -1,2 +1,2 @@
 # Iyanu-GST-collo
-NBios
+Tutorial on R programming 
